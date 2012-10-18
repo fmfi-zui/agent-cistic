@@ -13,7 +13,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -65,6 +68,16 @@ public class GuiStarter extends Frame implements Present{
 	public void redraw(){
 		area.repaint();
 	}
+        
+        private BufferedImage createImage(String resource) {
+            try {
+                return ImageIO.read(GuiStarter.class.getResource(resource));
+            } catch (IOException ex) {
+                Logger.getLogger(GuiStarter.class.getName()).log(Level.SEVERE, null, ex);
+                System.exit(1);
+            }
+            return null;
+        }
 
 	public void init(){
 		  //this.setTitle("PLEASE WAIT!");
@@ -83,18 +96,16 @@ public class GuiStarter extends Frame implements Present{
 			}
 	      });
 
-		Toolkit toolkit = getToolkit();
-		// create the image using the toolkit
-		img_wall = toolkit.createImage("bin/img/img_wall.jpg");
-		img_wall2 = toolkit.createImage("bin/img/img_wall2.jpg");		
-		img_wall3 = toolkit.createImage("bin/img/img_wall3.jpg");		
-		img_clean = toolkit.createImage("bin/img/img_clean.jpg");
-		img_clean2 = toolkit.createImage("bin/img/img_clean2.jpg");
-		img_clean3 = toolkit.createImage("bin/img/img_clean3.jpg");		
-		img_dirt = toolkit.createImage("bin/img/img_dirt.jpg");
-		img_dirt2 = toolkit.createImage("bin/img/img_dirt2.jpg");
-		img_dirt3 = toolkit.createImage("bin/img/img_dirt3.jpg");		
-		img_agent = toolkit.createImage("bin/img/img_agent.jpg");		
+		img_wall = createImage("img/img_wall.jpg");
+		img_wall2 = createImage("img/img_wall2.jpg");		
+		img_wall3 = createImage("img/img_wall3.jpg");		
+		img_clean = createImage("img/img_clean.jpg");
+		img_clean2 = createImage("img/img_clean2.jpg");
+		img_clean3 = createImage("img/img_clean3.jpg");		
+		img_dirt = createImage("img/img_dirt.jpg");
+		img_dirt2 = createImage("img/img_dirt2.jpg");
+		img_dirt3 = createImage("img/img_dirt3.jpg");		
+		img_agent = createImage("img/img_agent.jpg");		
 		
 		area = new JPanel(){
 			public void paint(Graphics g) {
