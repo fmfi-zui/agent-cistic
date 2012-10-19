@@ -36,12 +36,20 @@ public class GuiStarter extends Frame implements Present{
 	private Image img_dirt3 = null;	
 	private Image img_agent = null;
 	
+        private static void printUsage() {
+            System.err.println("GuiStarter world.txt <WAIT-TIME-MSEC> <PERCEPT-SIZE>");
+        }
+        
 	/**
 	 * @param args
 	 * @throws Throwable 
 	 */
 	public static void main(String[] args) throws Throwable {
-		if (args.length < 3) return;
+		if (args.length < 3) {
+                    System.err.println("Nedostatok argumentov");
+                    printUsage();
+                    return;
+                }
 		
 		GuiStarter s = new GuiStarter();
 		
