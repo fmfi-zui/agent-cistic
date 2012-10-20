@@ -57,15 +57,9 @@ public class GuiStarter extends Frame implements Present{
 		long w = Long.parseLong(args[1]);
 		int p = Integer.parseInt(args[2]);		
 		s.world = new World(file,w,p);
-		int x =r.nextInt(s.world.getWidth()-1)+1;
-		int y =r.nextInt(s.world.getHeight()-1)+1;
-		while (!s.world.freePlace(x, y)){
-			x =r.nextInt(s.world.getWidth()-1)+1;
-			y =r.nextInt(s.world.getHeight()-1)+1;
-		}
 
 		MyAgent agent = new MyAgent(s.world.net.length, s.world.net[0].length);
-		s.world.addAgent(agent, x, y);											
+		s.world.addAgent(agent);											
 
 		s.world.presenter = s;		
 		s.init();

@@ -28,7 +28,7 @@ public class World {
 	public static final String RIGHT = "RIGHT";
 	public static final String SUCK = "SUCK";
 	
-	
+	private boolean randomMap;
 	
 	public static Random r = new Random(new Date().getTime());
 	
@@ -73,7 +73,7 @@ public class World {
 		
 			BufferedReader r = new BufferedReader(new FileReader(f));
 			String s=r.readLine();
-			if (s.equals("random")){
+			if (randomMap = s.equals("random")){
 				s=r.readLine();
 				h=Integer.parseInt(s);
 				s=r.readLine();
@@ -87,6 +87,15 @@ public class World {
 				net = new int[w][h];
 				anet = new int[w][h];
 				untidy(di,wa);
+				
+				Random rand = new Random(System.currentTimeMillis());
+				
+				ax =rand.nextInt(getWidth()-1)+1;
+				ay =rand.nextInt(getHeight()-1)+1;
+				while (!freePlace(ax, ay)){
+					ax =rand.nextInt(getWidth()-1)+1;
+					ay =rand.nextInt(getHeight()-1)+1;
+				}
 			}else{
 				s=r.readLine();
 				h=Integer.parseInt(s);
@@ -105,6 +114,10 @@ public class World {
 							break;
 						case '*':								
 							net[i][j]=DIRTY;
+							break;
+						case '@':								
+							ax = j;
+							ay = i;
 							break;
 						default:
 							net[i][j]=CLEAN;							
@@ -126,17 +139,15 @@ public class World {
 	}
 
 	
-	public void addAgent(Agent agent, int x,int y){
+	public void addAgent(Agent agent){
 		
-		if (!agents.contains(agent)&& freePlace(x, y)) {
+		if (!agents.contains(agent)&& freePlace(ax, ay)) {
 				agent.putInWorld(this);
 				agents.add(agent);
-				xcoor.put(agent,new Integer(x));
-				ycoor.put(agent,new Integer(y));
-				orient.put(agent,new Integer(r.nextInt(4)));
-			    anet[y][x]=AGENT;
-				ax = x;
-				ay = y;
+				xcoor.put(agent,ax);
+				ycoor.put(agent,ay);
+				orient.put(agent,randomMap?new Integer(r.nextInt(4)):NORTH);
+			    anet[ay][ax]=AGENT;
 		}
 	}
 	
