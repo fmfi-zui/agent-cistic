@@ -1,0 +1,17 @@
+100 world30.txt 5 900
+
+100 world40.txt 5 2000
+
+100 world50.txt 5 4000
+
+100 world60.txt 5 7000
+
+100 world70.txt 5 50000
+
+100 world80.txt 5 100000
+
+100 world90.txt 5 200000
+
+100 world100.txt 5 200000
+
+100 world200.txt 5 200000

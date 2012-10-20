@@ -1,0 +1,11 @@
+1 MapaLOL.txt 1 10000000
+1 MapaLOL.txt 2 10000000
+1 MapaLOL.txt 3 10000000
+1 MapaLOL.txt 4 10000000
+1 MapaLOL.txt 5 10000000
+
+1 Mapat.txt 1 10000000
+1 Mapat.txt 2 10000000
+1 Mapat.txt 3 10000000
+1 Mapat.txt 4 10000000
+1 Mapat.txt 5 10000000
