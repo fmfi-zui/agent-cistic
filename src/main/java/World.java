@@ -170,8 +170,7 @@ public class World {
 			presenter.redraw();
 
 		Agent element = (Agent) agents.get(0);
-		System.out.println(element.isRunning());
-
+		
 		try {
 			do{
 				if (presenter!=null){
@@ -184,7 +183,7 @@ public class World {
 
 				final long startTime = System.currentTimeMillis();
 				element.act();
-				System.out.println("HHH");
+				
 				result.runtimeMillis += System.currentTimeMillis() - startTime;
 				
 				if (timeout > 0 && result.runtimeMillis > timeout) {
@@ -197,7 +196,6 @@ public class World {
 				}else if (element.getPercepted() - p > 1){
 					throw new Exception("Agent performed more than one perception in act.");
 				}
-				System.out.println(element.isRunning());
 			} while(element.isRunning());
 		} catch (Exception e) {
 			result.state = Result.State.EXCEPTION;
