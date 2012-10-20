@@ -94,7 +94,18 @@ public class GuiStarter extends Frame implements Present{
 	      b.addActionListener(new ActionListener(){
 			synchronized public void actionPerformed(ActionEvent arg0) {
 				b.setEnabled(false);
-				world.run();				
+				Thread t = new Thread(new Runnable() {
+
+					public void run() {
+						World.Result result = world.run(0);
+						System.out.println(result.steps + " steps");
+						if (World.Result.State.EXCEPTION.equals(result.state)) {
+							System.exit(1);
+						}
+					}
+					
+				});
+				t.start();
 			}
 	      });
 

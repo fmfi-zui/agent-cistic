@@ -1,3 +1,4 @@
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.LinkedList;
 
 public class World {
 	public static final int CLEAN = 0;
@@ -158,51 +160,115 @@ public class World {
 		
 	}
 	
-	public void run(){
-		Thread t = new Thread(){
-			public void run(){
-				
-				if (presenter!=null)
-					presenter.redraw();
-				
-				Agent element = (Agent) agents.get(0);
-				
-				do{
-					
-					try {
+	public Result run(long timeout){
+		Result result = new Result();
+		result.state = Result.State.HALTED;
+		result.runtimeMillis = 0;
+		result.correctSolution = false;
+		
+		if (presenter!=null)
+			presenter.redraw();
 
-						if (presenter!=null){
-							presenter.redraw();
-							Thread.sleep(WAIT);
-						}
-													
-							long s = element.getSteps();
-							long p = element.getPercepted();			
-							
-							element.act();
-							
-							if (element.getSteps() - s > 1){
-								throw new Exception("Agent performed more than one action in act.");								
-							}else if (element.getPercepted() - p > 1){
-								throw new Exception("Agent performed more than one perception in act.");
-							}
-					} catch (Exception e) {
-						e.printStackTrace();
-						element.halt();
-						System.exit(1);
-					}
-				} while(element.isRunning());
-				
-				save = true; 
+		Agent element = (Agent) agents.get(0);
+		System.out.println(element.isRunning());
 
+		try {
+			do{
 				if (presenter!=null){
 					presenter.redraw();
+					Thread.sleep(WAIT);
 				}
 
-				System.out.println(element.getSteps() + " steps");								
+				final long s = element.getSteps();
+				final long p = element.getPercepted();
+
+				final long startTime = System.currentTimeMillis();
+				element.act();
+				System.out.println("HHH");
+				result.runtimeMillis += System.currentTimeMillis() - startTime;
+				
+				if (timeout > 0 && result.runtimeMillis > timeout) {
+					result.state = Result.State.TIMEOUT;
+					break;
+				}
+
+				if (element.getSteps() - s > 1){
+					throw new Exception("Agent performed more than one action in act.");								
+				}else if (element.getPercepted() - p > 1){
+					throw new Exception("Agent performed more than one perception in act.");
+				}
+				System.out.println(element.isRunning());
+			} while(element.isRunning());
+		} catch (Exception e) {
+			result.state = Result.State.EXCEPTION;
+			e.printStackTrace();
+		}
+		
+		result.steps = element.getSteps();
+		if (Result.State.HALTED.equals(result.state)) {
+			result.correctSolution = checkSolution();
+		}
+
+		save = true; 
+
+		if (presenter!=null){
+			presenter.redraw();
+		}
+
+		return result;
+	}
+	
+	private boolean checkSolution() {
+		boolean[][] added = new boolean[getHeight()][getWidth()];
+		
+		LinkedList<Point> open = new LinkedList<Point>();		
+		open.add(new Point(ax, ay));
+		added[ay][ax] = true;
+		
+		int i = 5;
+		
+		Point currentState;
+		
+		do{
+			currentState = open.removeFirst();			
+			if (badTile(currentState)){
+				return false;
 			}
-		};
-		t.start();
+			
+			int y = currentState.y;
+			int x = currentState.x;						
+			
+			// move NORTH, if possible
+			if (!added[y-1][x] && net[y-1][x] != WALL){
+				added[y-1][x] = true;
+				open.add(new Point(x, y-1));
+			}
+			// move SOUTH, if possible
+			if (!added[y+1][x] && net[y+1][x] != WALL){
+				added[y+1][x] = true;				
+				open.add(new Point(x, y+1));
+			}
+			// move EAST, if possible
+			if (!added[y][x+1] && net[y][x+1] != WALL){
+				added[y][x+1] = true;				
+				open.add(new Point(x+1, y));
+			}
+			// move WEST, if possible
+			if (!added[y][x-1] && net[y][x-1] != WALL){
+				added[y][x-1] = true;				
+				open.add(new Point(x-1, y));
+			}			
+		}while(!open.isEmpty());		
+
+		return true;
+	}
+
+	private boolean badTile(Point currentState){
+		int y = currentState.y;
+		int x = currentState.x;
+		
+			// unseen reachable tile or uncleaned reachable dirty
+		return !v[y][x] || net[y][x] == DIRTY;
 	}
 
 	private void untidy(double di, double wa){
@@ -467,4 +533,28 @@ public class World {
 		return PERCEPTION;
 	}
 	
+	
+	public static class Result {
+		public State state;
+		public boolean correctSolution;
+		public long runtimeMillis;
+		public long steps;
+		
+		public static enum State {
+			EXCEPTION, TIMEOUT, HALTED;
+		}
+		
+		public String toString() {
+			StringBuilder sb = new StringBuilder("Result{");
+			sb.append("state=").append(state);
+			sb.append(", ");
+			sb.append("correctSolution=").append(correctSolution);
+			sb.append(", ");
+			sb.append("runtimeMillis=").append(runtimeMillis);
+			sb.append(", ");
+			sb.append("steps=").append(steps);
+			sb.append("}");
+			return sb.toString();
+		}
+	}
 }
