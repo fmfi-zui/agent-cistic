@@ -1,6 +1,8 @@
 
 import java.io.*;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Tester{
 private World world;	
@@ -50,7 +52,7 @@ private World world;
 
 						s.world.addAgent(agent);
 						World.Result result = s.world.run(max);
-						writeLog(args[0], file, max, s.world, result);
+						writeLog(args[0], file, i, max, s.world, result);
 						
 						System.out.println(i+"/"+repetitions+" of " + line);
 					}
@@ -66,7 +68,8 @@ private World world;
 		}		
 	}
 	
-	private static void writeLog(String logName, String mapName, long timeLimit, World world, World.Result result) {
+	private static void writeLog(String logName, String mapName, int repetition,
+			long timeLimit, World world, World.Result result) {
 		File dir = new File(logName);
 		dir.mkdir();
 		
@@ -91,16 +94,20 @@ private World world;
 						  (result.correctSolution?"YES":"NO"));
 				out.newLine();
 			} finally {
-				out.close();	
-
-				// TODO: portnut aj vyrabanie screenu
-//				if(World.Result.State.HALTED.equals(result.state) && !result.correctSolution){
-//					makeScreen();
-//				}
+				out.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();							
 			System.out.println("Exception occured during LOG creation :(");
-		}				
+		}
+		
+		if(World.Result.State.HALTED.equals(result.state) && !result.correctSolution){
+			WorldRenderer renderer = new WorldRenderer(world);
+			try {
+				renderer.saveImage(new File(logName + "/" + mapName + "-" + repetition + ".png"));
+			} catch (IOException ex) {
+				Logger.getLogger(Tester.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 }

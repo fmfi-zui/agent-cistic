@@ -51,8 +51,6 @@ public class World {
 	private Map orient = new HashMap();
 	private List agents= new ArrayList();
 	
-	boolean save = false;
-	
 	public World(String fileName, long wait, int perception) {
 		load(fileName);
 		this.WAIT=wait;
@@ -206,8 +204,6 @@ public class World {
 		if (Result.State.HALTED.equals(result.state)) {
 			result.correctSolution = checkSolution();
 		}
-
-		save = true; 
 
 		if (presenter!=null){
 			presenter.redraw();
